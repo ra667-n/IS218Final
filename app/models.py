@@ -1,35 +1,27 @@
-import unittest
-from app import db, create_app
-from app.models import User
+from . import db
 
-class TestUserModel(unittest.TestCase):
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    bio = db.Column(db.String(255))
+    location = db.Column(db.String(100))
+    professional_status = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(50), default="user")  # roles: user, manager, admin
+from app import db, ma
 
-    def setUp(self):
-        self.app = create_app('testing')
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    name = db.Column(db.String(120))
+    bio = db.Column(db.Text)
+    location = db.Column(db.String(120))
+    is_professional = db.Column(db.Boolean, default=False) 
 
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
+    def __repr__(self):
+        return '<User %r>' % self.username
 
-    def test_create_user(self):
-        user = User(username='testuser', email='test@example.com')
-        db.session.add(user)
-        db.session.commit()
-        self.assertIsNotNone(user.id)
-
-    def test_user_repr(self):
-        user = User(username='testuser', email='test@example.com')
-        self.assertEqual(str(user), '<User testuser>')
-
-    def test_user_is_professional(self):
-        user = User(username='testuser', email='test@example.com', is_professional=True)
-        db.session.add(user)
-        db.session.commit()
-        self.assertTrue(user.is_professional)
-
-if __name__ == '__main__':
-    unittest.main()
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        include_fk = True
