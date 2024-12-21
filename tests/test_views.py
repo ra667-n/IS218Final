@@ -65,6 +65,14 @@ class TestUserViews(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         response2 = self.client.put(f'/users/{self.test_user_id}/upgrade', headers={'Authorization': f'Bearer {self.test_admin_token}'})
         self.assertEqual(response2.status_code, 200) #Or perhaps 204 No Content if no change
+    def test_update_user_empty_fields(self):
+        response = self.client.put('/users/me', headers={'Authorization': f'Bearer {self.test_token}'}, json={'name': '', 'bio': ''})
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_user_no_token(self):
+        response = self.client.get('/users/me')
+        self.assertEqual(response.status_code, 401)
+
 
 
 
