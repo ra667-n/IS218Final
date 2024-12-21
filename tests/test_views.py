@@ -56,5 +56,15 @@ class TestUserViews(unittest.TestCase):
     def test_upgrade_user_not_found(self):
         response = self.client.put('/users/9999/upgrade', headers={'Authorization': f'Bearer {self.test_admin_token}'})
         self.assertEqual(response.status_code, 404)
+    def test_upgrade_user_not_admin(self):
+        response = self.client.put(f'/users/{self.test_user_id}/upgrade', headers={'Authorization': f'Bearer {self.test_token}'}) #regular user trying to upgrade
+        self.assertEqual(response.status_code, 403) # Or appropriate error code for Forbidden
+
+    def test_upgrade_user_already_upgraded(self):
+        response = self.client.put(f'/users/{self.test_user_id}/upgrade', headers={'Authorization': f'Bearer {self.test_admin_token}'})
+        self.assertEqual(response.status_code, 200)
+        response2 = self.client.put(f'/users/{self.test_user_id}/upgrade', headers={'Authorization': f'Bearer {self.test_admin_token}'})
+        self.assertEqual(response2.status_code, 200) #Or perhaps 204 No Content if no change
+
 
 
