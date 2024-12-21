@@ -48,4 +48,13 @@ class TestUserViews(unittest.TestCase):
     def test_update_user_invalid_data(self):
         response = self.client.put('/users/me', headers={'Authorization': f'Bearer {self.test_token}'}, json={'email': 'invalid_email'}) #invalid email format
         self.assertEqual(response.status_code, 400) # Or appropriate error code
+        
+    def test_update_user_no_data(self):
+        response = self.client.put('/users/me', headers={'Authorization': f'Bearer {self.test_token}'}, json={})
+        self.assertEqual(response.status_code, 200) #Should still return ok
+
+    def test_upgrade_user_not_found(self):
+        response = self.client.put('/users/9999/upgrade', headers={'Authorization': f'Bearer {self.test_admin_token}'})
+        self.assertEqual(response.status_code, 404)
+
 
