@@ -39,3 +39,13 @@ class TestUserViews(unittest.TestCase):
         db.session.remove()
         db.drop_all()
         self.app_context.pop()
+
+    def test_get_user_not_found(self):
+        token = generate_test_token(9999) # non existent user
+        response = self.client.get('/users/me', headers={'Authorization': f'Bearer {token}'})
+        self.assertEqual(response.status_code, 404)
+
+    def test_update_user_invalid_data(self):
+        response = self.client.put('/users/me', headers={'Authorization': f'Bearer {self.test_token}'}, json={'email': 'invalid_email'}) #invalid email format
+        self.assertEqual(response.status_code, 400) # Or appropriate error code
+
