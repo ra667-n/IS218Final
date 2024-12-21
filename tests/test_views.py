@@ -72,6 +72,10 @@ class TestUserViews(unittest.TestCase):
     def test_get_user_no_token(self):
         response = self.client.get('/users/me')
         self.assertEqual(response.status_code, 401)
+    def test_update_user_invalid_token(self):
+        response = self.client.put('/users/me', headers={'Authorization': 'Bearer invalid_token'}, json={'name': 'Test User'})
+        self.assertEqual(response.status_code, 401) # Or appropriate error code for invalid token
+
 
 
 
